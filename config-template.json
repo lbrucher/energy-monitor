@@ -1,0 +1,31 @@
+{
+    "jeedom": {
+        "url": "http://192.168.1.15:9080",
+        "api_key": "wa3CHXhNbUYtxCYEpJn5PBbWu3u6FTuROFe5NSyRGBAwOAh5bX2447FZ7Rj9pifv",
+        "command_ids": {
+            "em_pull_instant":   2,
+            "em_pull_day":       4,
+            "em_pull_night":     5,
+            "em_push_instant":   3,
+            "em_push_day":       6,
+            "em_push_night":     7,
+            "inv_instant_prod":  18,
+            "inv_daily_prod":    19,
+            "inv_device_status": 20,
+            "inv_state1":        21,
+            "inv_state2":        22,
+            "inv_state3":        23,
+            "inv_alarm1":        24,
+            "inv_alarm2":        25,
+            "inv_alarm3":        26
+        }
+    },
+    "sagemcom": {
+        "usb_path": "/dev/ttyUSB0",
+        "usb_baud_rate": 115200
+    },
+    "huawei": {
+        "dongle_ip": "192.168.1.31",
+        "dongle_port": 502
+    }
+}

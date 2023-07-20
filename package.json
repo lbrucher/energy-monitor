@@ -1,0 +1,13 @@
+{
+  "name": "energy-monitor",
+  "version": "0.1.0",
+  "description": "Collect Sagemcom electric meter & Huawei PV inverter data and send them to Jeedom",
+  "author": {
+    "name": "Laurent Brucher"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "modbus-stream": "^0.46.0",
+    "serialport": "^11.0.0"
+  }
+}

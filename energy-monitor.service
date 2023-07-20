@@ -1,0 +1,12 @@
+[Unit]
+Description=Energy monitoring data to Jeedom 
+After=network.target
+
+[Service]
+Type=simple
+User=admin
+ExecStart=/usr/local/bin/node /usr/local/src/energy-monitor/main.js -l 1 -f 60 -i 30
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
