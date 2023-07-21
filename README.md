@@ -8,12 +8,14 @@ This program does 2 things:
 * sends the collected data to a local Jeedom
 
 The setup included here targets a Raspberry Pi first generation and relies on NodeJS v18.9 or later.
-It also assumes a Jeedom installed somewhere on the local network NAS, etc.).
+It also assumes a Jeedom installed somewhere on the local network (NAS, etc.).
 
-The Raspberry Pi is normally located next to the Sagemcom energy meter and communicates via a RJ12 to USB cable (e.g. `https://www.amazon.fr/dp/B08GWZTNM3?psc=1&ref=ppx_yo2ov_dt_b_product_details`). The rbp is also connected to the local network in order to communicate with the Huawei inverter and with Jeedom.
+The Raspberry Pi is normally located next to the Sagemcom energy meter and communicates via a RJ12 to USB cable. The rbp is also connected to the local network in order to communicate with the Huawei inverter and with Jeedom.
 
 
 # What information is being collected
+
+Note: the fields mentioned below (`em_pull_instant`, etc.) refer to fields found in the `config.json` configuration file (see `App configuration` section later in the document).
 
 
 ### From the Sagemcom Energy Meter
@@ -41,14 +43,72 @@ See the `Huawei Solar Inverter Modbus Interface Definitions.pdf` document in thi
 * `inv_alarm3`: alarm 3 (address 32010)
 
 
+
+
+# Sagemcom energy meter setup
+
+All you need to do is ensure the port P1 is enabled on the energy meter.
+
+You'll also need a proper RJ12 to USB cable to connect it to the Raspberry Pi (e.g. [https://www.amazon.fr/dp/B08GWZTNM3?psc=1&ref=ppx_yo2ov_dt_b_product_details](https://www.amazon.fr/dp/B08GWZTNM3?psc=1&ref=ppx_yo2ov_dt_b_product_details)).
+
+**In Belgium**: enabling the P1 port can be done for free during the installation of the meter. Make sure to specify it to the installer if s/he does not mention it first. Otherwise you'll have to pay a fee to enable it afterwards.
+
+
+# Huawei inverter setup
+
+In order to be able to communicate via MODBUS over TCP the inverter dongle (SDongleA-05) firmware version must be at least `V100R001C00SPC124` ([https://forum.huawei.com/enterprise/en/modbus-tcp-guide/thread/667250677153415168-667213868771979264](https://forum.huawei.com/enterprise/en/modbus-tcp-guide/thread/667250677153415168-667213868771979264).
+
+Updating the firmware yourself is not easy (hard to find a firmware publicly available, etc.). Best is to ask your installer to do it for you. They should even be able to it remotely at no charge (they did this for me).
+
+The other step is to ensure that the Modbus protocol is enabled in the device. See [https://forum.huawei.com/enterprise/en/modbus-tcp-guide/thread/667250677153415168-667213868771979264](https://forum.huawei.com/enterprise/en/modbus-tcp-guide/thread/667250677153415168-667213868771979264) for instructions on how to do this (you can skip `Step 2: Get the Inverter Upgrade Package...`).
+
+Lastly, I also did setup my dongle with a static IP address instead of DHCP. This way I am sure the IP address I reference in the configurastion file (see 'App configuration` section below) remains the same. The SUN2000 mobile app can help you with that too.
+
+
 # Jeedom setup
 
-TODO...
+First make sure Jeedom is installed and up and running.
+
+My setup consists of 2 virtual equipments, one for the energy meter and one for the inverter.
+Both equipments are connected to their `Home` object.
+
+To setup the equipments:
+
+* Add a Virtual plugin
+* From the menu bar, open `Plugins / Programming / Virtual`
+* Click Add and name it `Energy Meter`
+	* Setup the parent object (e.g. `Home`)
+	* Category `Energy`
+	* Check `Activate` and `Visible`
+	* Go to the `Commands` tab
+	* Add `virtual info` 6 times (pull/push instant, pull/push day, pull/push night), check `Show` and `Historize` for all of them, set the unit to `kWh` for all but the 2 instant that are `kW`.
+	* Keep a note of the command IDs (leftmost column), you will need those for the script's configuration file (see `App configuration` section later in the document).
+	* Click `Save`
+* Go back to the list of Virtuals, click Add and name it `Inverter`
+	* Setup the parent object (e.g. `Home`)
+	* Category `Energy`
+	* Check `Activate` and `Visible`
+	* Go to the `Commands` tab
+	* Add `virtual info` 9 times (instant/daily prod, device status, state 1/2/3, alarm 1/2/3), check `Show` and `Historize` for all of them, set the unit to `kW` for instant prod and `kWh` for daily prod.
+	* Again, keep a note of the command IDs.
+   * Click `Save`
+* From the menu bar, open `Analysis / History`
+* Click `Configuration` next to `Commands`
+* Smoothing is by default set to `Average`, which is not adequate for the inverter instant prod, state1/2/3 and alarm1/2/3. For those, set the smoothing to `None`.
+* While at it, I also put a check mark and set the folder in the `Timeline` column for:
+	* the inverter's device status and state1/2/3, folder = `Status` 
+	* the inverter's alarm1/2/3 , folder = `Alarms`
+
+  This will show those values in the Timeline and allow you to filter the output by the folder name.
+* You might also want to set the Purge depending on your needs. I did so for the inverter's device status, states and alarms. Those are set to 1 month.
+* Click `Save`
+
+BTW, feedback welcome on this setup, I'm no Jeedom expert ;-)
 
 
-# Installation
+# Raspberry Pi setup
 
-Raspberry Pi installation
+OS installation
 
 	Download the Raspberry Pi Imager from https://www.raspberrypi.com/software/
 	From the Imager app, select "Choose OS"
@@ -60,6 +120,7 @@ Raspberry Pi installation
 Once RBP has succesfully booted the rest is done on the device itself
 
 	$ ssh admin@<your rbp IP address>
+	(password is 'admin' by default)
 
 
 System update
@@ -78,7 +139,7 @@ NodeJS installation
 	$ rm -rf node-v18.9.1-linux-armv6l
 	$ rm node-v18.9.1-linux-armv6l.tar.gz
 
-Note: The Raspberry Pi first generation runs an ARM v6, which is not supported by the official NodeJS distributions anymore. Hence the download from `https://unofficial-builds.nodejs.org`
+Note: The Raspberry Pi first generation runs an ARM v6, which is not supported by the official NodeJS distributions anymore. Hence the download from [https://unofficial-builds.nodejs.org](https://unofficial-builds.nodejs.org)
 
 
 This app install
