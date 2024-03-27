@@ -108,7 +108,7 @@ BTW, feedback welcome on this setup, I'm no Jeedom expert ;-)
 
 # Raspberry Pi setup
 
-OS installation (first generation RBD)
+OS installation (first generation RBP)
 
 	Download the Raspberry Pi Imager from https://www.raspberrypi.com/software/
 	From the Imager app, select "Choose OS"
