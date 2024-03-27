@@ -115,6 +115,7 @@ OS installation (first generation RBP)
 	Select "Raspberry Pi OS (other)"
 	Select "Raspberry Pi OS Lite (32 bit) / A port of Debian Bullseye with no desktop environment"
 	Choose the storage then Write.
+ 	You might need to edit the OS parameters, specifically enabling SSH before you start writing the image.
 	
 
 Once RBP has succesfully booted the rest is done on the device itself
@@ -134,7 +135,7 @@ NodeJS installation
 	$ tar zxf node-v18.9.1-linux-armv6l.tar.gz
 	$ cd node-v18.9.1-linux-armv6l
 	$ rm CHANGELOG.md LICENSE README.md
-	$ cp -R * /usr/local
+	$ sudo cp -R * /usr/local
 	$ cd ..
 	$ rm -rf node-v18.9.1-linux-armv6l
 	$ rm node-v18.9.1-linux-armv6l.tar.gz
@@ -147,7 +148,7 @@ This app install
 	$ wget https://github.com/lbrucher/energy-monitor/archive/refs/heads/main.zip
 	$ sudo unzip -d /usr/local/src main.zip
 	$ sudo mv /usr/local/src/energy-monitor-main /usr/local/src/energy-monitor
-	$ sudo chown admin /usr/local/src/energy-monitor
+	$ sudo chown -R admin /usr/local/src/energy-monitor
 
 App config
 
